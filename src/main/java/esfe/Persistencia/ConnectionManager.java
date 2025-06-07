@@ -123,4 +123,5 @@ public class ConnectionManager {
         // Retorna la instancia existente (o la recién creada).
         return instance;
     }
+
 }
