@@ -167,7 +167,7 @@ class UserDAOTest {
         // Intenta actualizar la contraseña del usuario de prueba con una nueva contraseña.
         testUser.setPasswordHash("new_password"); // Establece la *nueva* contraseña para la actualización.
         updatePassword(testUser); //  Llama al método para actualizar la contraseña en la base de datos.
-        testUser.setPasswordHash("new password"); // **Importante:** Actualiza el objeto 'testUser' con la *nueva* contraseña para la siguiente
+        testUser.setPasswordHash("new_password"); // **Importante:** Actualiza el objeto 'testUser' con la *nueva* contraseña para la siguiente
         autenticate(testUser); // Verifica que la autenticación sea exitosa con la *nueva* contraseña
 
         // Llama al método 'delete' para eliminar el usuario de prueba de la base de datos y verifica la eliminación.
@@ -175,7 +175,7 @@ class UserDAOTest {
     }
     @Test
     void createUser () throws  SQLException {
-        User user = new User(0, "admin", "12345", "admin@gmail.com", (byte)1,2);
+        User user = new User(0, "admin", "12345", "admin2@gmail.com", (byte)1,2);
         User res = userDAO.create(user);
         assertNotEquals(res, null);
     }
