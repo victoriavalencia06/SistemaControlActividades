@@ -15,6 +15,7 @@ public class UserWriteForm extends JDialog {
     private JTextField txtEmail;
     private JPasswordField txtPassword;
     private JComboBox cbStatus;
+    private JComboBox cbRol;
     private JButton btnOk;
     private JButton btnCancel;
     private JLabel lbPassword;
