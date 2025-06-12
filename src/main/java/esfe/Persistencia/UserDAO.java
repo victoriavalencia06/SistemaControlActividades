@@ -177,10 +177,12 @@ public class UserDAO {
 
         try {
             // Preparar la sentencia SQL para buscar usuarios por nombre (usando LIKE para búsqueda parcial).
-            ps = conn.connect().prepareStatement("SELECT idUser, name, email, status, idRole " +
-                    " FROM [Users]" +
-                    " WHERE name LIKE ?");
-
+            ps = conn.connect().prepareStatement(
+                    "SELECT u.idUser, u.name, u.email, u.status, u.idRole, r.name AS roleName " +
+                            "FROM Users u " +
+                            "LEFT JOIN Role r ON u.idRole = r.idRole " +  // Relación entre tablas
+                            "WHERE u.name LIKE ?"
+            );
             // Establecer el valor del parámetro en la sentencia preparada.
             // El '%' al inicio y al final permiten la búsqueda de la cadena 'name' en cualquier parte del nombre del usuario.
             ps.setString(1, "%" + name + "%");
@@ -198,6 +200,7 @@ public class UserDAO {
                 user.setEmail(rs.getString(3)); // Obtener el correo eléctronico del usuario.
                 user.setStatus(rs.getByte(4));  // Obtener el estado del usuario.
                 user.setIdRole(rs.getInt(5));  // Obtener el rol del usuario.
+                user.setRoleName(rs.getString("roleName"));  // Nuevo campo
                 // Agregar el objeto User a la lista de resultados.
                 records.add(user);
             }
@@ -230,9 +233,12 @@ public class UserDAO {
 
         try {
             // Preparar la sentencia SQL para seleccionar un usuario por su ID.
-            ps = conn.connect().prepareStatement("SELECT idUser, name, email, status, idRole " +
-                    " FROM [Users] " +
-                    " WHERE idUser = ?");
+            ps = conn.connect().prepareStatement(
+                    "SELECT u.idUser, u.name, u.email, u.status, u.idRole, r.name AS roleName " +
+                            "FROM Users u " +
+                            "LEFT JOIN Role r ON u.idRole = r.idRole " +
+                            "WHERE u.idUser = ?"
+            );
 
             // Establecer el valor del parámetro en la sentencia preparada (el ID a buscar).
             ps.setInt(1, id);
@@ -248,6 +254,8 @@ public class UserDAO {
                 user.setEmail(rs.getString(3)); // Obtener el correo electrónico del usuario.
                 user.setStatus(rs.getByte(4));  // Obtener el estado del usuario.
                 user.setIdRole(rs.getInt(5));  // Obtener el rol del usuario.
+                user.setRoleName(rs.getString("roleName"));  // Nuevo campo
+
 
             } else {
                 // Si no se encontró ningún usuario con el ID específicado, establecer el objeto User a null.

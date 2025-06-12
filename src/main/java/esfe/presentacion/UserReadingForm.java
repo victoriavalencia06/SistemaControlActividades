@@ -127,7 +127,7 @@ public class UserReadingForm extends JDialog {
         model.addColumn("Nombre");
         model.addColumn("Email");
         model.addColumn("Estatus");
-        model.addColumn("IdRol");
+        model.addColumn("Rol");
 
 
         // Establece el modelo de tabla creado como el modelo de datos para la
@@ -152,6 +152,8 @@ public class UserReadingForm extends JDialog {
             // Establece el valor del estatus del usuario (probablemente obtenido a través de un método 'getStrEstatus()')
             // en la celda correspondiente de la fila actual (columna 3).
             model.setValueAt(user.getStrEstatus(), i, 3);
+            model.setValueAt(user.getRoleName(), i, 4);  // Nombre del rol (no el ID)
+
         }
 
         // Llama al método 'hideCol' para ocultar la columna con índice 0 (la columna del ID).

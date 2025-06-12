@@ -7,6 +7,8 @@ public class User {
     private String email;
     private byte status;
     private int idRole;
+    private String roleName;  // Campo para el nombre del rol
+
 
 
     public User() {
@@ -67,6 +69,14 @@ public class User {
 
     public void setIdRole(int idRole) {
         this.idRole = idRole;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public String getStrEstatus(){

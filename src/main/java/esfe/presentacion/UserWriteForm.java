@@ -1,5 +1,7 @@
 package esfe.presentacion;
 
+import esfe.Persistencia.RoleDAO;
+import esfe.dominio.Role;
 import esfe.Persistencia.UserDAO; // Importa la interfaz o clase UserDAO, que define las operaciones de acceso a datos para la entidad User.
 import esfe.utils.CBOption; // Importa la clase CBOption, probablemente una clase utilitaria para manejar opciones de un ComboBox (por ejemplo, para asociar un valor con un texto).
 import esfe.utils.CUD; // Importa el enum CUD (Create, Update, Delete),  para indicar el tipo de operación que se está realizando (Crear, Actualizar, Eliminar).
@@ -47,6 +49,7 @@ public class UserWriteForm extends JDialog {
     private void init() {
         // Inicializa el ComboBox de estatus (cbEstatus) con las opciones correspondientes.
         initCBStatus();
+        initCBRol();
 
         // Realiza acciones específicas en la interfaz de usuario basadas en el tipo de operación (CUD).
         switch (this.cud) {
@@ -124,7 +127,25 @@ public class UserWriteForm extends JDialog {
             // Oculta la etiqueta de la contraseña 'lbPassword'.
             lbPassword.setVisible(false);
         }
+        // Aquí: seleccionar el rol actual del usuario en el combobox
+        cbRol.setSelectedItem(new CBOption(null, user.getIdRole()));
     }
+    private void initCBRol() {
+        DefaultComboBoxModel<CBOption> model = (DefaultComboBoxModel<CBOption>) cbRol.getModel();
+        model.removeAllElements();
+
+        RoleDAO roleDAO = new RoleDAO();
+        try {
+            for (Role role : roleDAO.search("")) {
+                model.addElement(new CBOption(role.getName(), role.getIdRole()));
+            }
+        } catch (java.sql.SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar roles: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+
 
     private boolean getValuesControls() {
         boolean res = false; // Inicializa la variable 'res' a false (indicando inicialmente que la validación falla).
@@ -134,7 +155,13 @@ public class UserWriteForm extends JDialog {
         // Obtiene el valor del estatus de la opción seleccionada.
         // Si no hay ninguna opción seleccionada (selectedOption es null), se asigna el valor 0 al estatus.
         byte status = selectedOption != null ? (byte) (selectedOption.getValue()) : (byte) 0;
-
+        // Aquí: obtener rol seleccionado y asignarlo
+        CBOption selectedRole = (CBOption) cbRol.getSelectedItem();
+        if (selectedRole == null) {
+            return false;  // No hay rol seleccionado, falla validación
+        }
+        // ASIGNAR el rol al objeto User:
+        this.en.setIdRole((int) selectedRole.getValue());
         // Realiza una serie de validaciones en los campos de entrada:
 
         // 1. Verifica si el campo de texto 'txtName' está vacío (después de eliminar espacios en blanco al inicio y al final).

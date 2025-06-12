@@ -42,7 +42,7 @@ public class CBOption {
         // Compara el valor del atributo 'value' de esta instancia con el valor del atributo 'value'
         // del objeto 'other'. Si los valores no son iguales, los objetos no son iguales,
         // por lo tanto, retorna falso.
-        if (this.getValue() != other.getValue()) {
+        if (this.value == null ? other.value != null : !this.value.equals(other.value)) {
             return false;
         }
 
