@@ -5,7 +5,8 @@ import javax.swing.*;
 public class RoleForm extends JDialog {
     private JPanel mainPanel;
     private JTextField txtNombre;
-    private JComboBox comboEstado;
-    private JButton guardarButton;
-    private JButton cancelarButton;
+    private JButton btnCrear;
+    private JTable tableRol;
+    private JButton btnModificar;
+    private JButton btnEliminar;
 }
