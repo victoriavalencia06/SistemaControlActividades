@@ -1,6 +1,7 @@
 package esfe.presentacion;
 
 import esfe.dominio.User;
+import esfe.dominio.Role;
 import javax.swing.*;
 
 public class MainForm extends JFrame {
@@ -60,6 +61,13 @@ public class MainForm extends JFrame {
         itemUsers.addActionListener(e -> { // Agrega un ActionListener al elemento "Usuarios".
             UserReadingForm userReadingForm = new UserReadingForm(this); // Cuando se hace clic, crea una nueva instancia de UserReadingForm (formulario para leer/listar usuarios), pasándole la instancia actual de MainForm como padre.
             userReadingForm.setVisible(true); // Hace visible el formulario de lectura de usuarios.
+        });
+
+        JMenuItem itemRole = new JMenuItem("Rol"); // Crea un nuevo elemento de menú llamado "Usuarios".
+        menuMantenimiento.add(itemRole); // Agrega el elemento "Usuarios" al menú "Mantenimientos".
+        itemRole.addActionListener(e -> { // Agrega un ActionListener al elemento "Usuarios".
+            RoleForm RoleForm = new RoleForm(this); // Cuando se hace clic, crea una nueva instancia de UserReadingForm (formulario para leer/listar usuarios), pasándole la instancia actual de MainForm como padre.
+            RoleForm.setVisible(true); // Hace visible el formulario de lectura de usuarios.
         });
 
     }

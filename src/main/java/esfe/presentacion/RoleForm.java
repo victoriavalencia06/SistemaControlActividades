@@ -14,9 +14,9 @@ public class RoleForm extends JDialog {
     private JPanel mainPanel;
     private JTextField txtNombre;
     private JButton btnCrear;
-    private JTable tableRol;
     private JButton btnModificar;
     private JButton btnEliminar;
+    private JTable tablaRol;
 
     private RoleDAO roleDAO;
     private MainForm mainForm;
@@ -37,7 +37,7 @@ public class RoleForm extends JDialog {
                 if (!txtNombre.getText().trim().isEmpty()) {
                     search(txtNombre.getText().trim());
                 } else {
-                    tableRol.setModel(new DefaultTableModel());
+                    tablaRol.setModel(new DefaultTableModel());
                 }
             }
         });
@@ -45,7 +45,7 @@ public class RoleForm extends JDialog {
         btnCrear.addActionListener(e -> {
             RoleWriteForm form = new RoleWriteForm(mainForm, CUD.CREATE, new Role());
             form.setVisible(true);
-            tableRol.setModel(new DefaultTableModel()); // refrescar
+            tablaRol.setModel(new DefaultTableModel()); // refrescar
         });
 
         btnModificar.addActionListener(e -> {
@@ -53,7 +53,7 @@ public class RoleForm extends JDialog {
             if (role != null) {
                 RoleWriteForm form = new RoleWriteForm(mainForm, CUD.UPDATE, role);
                 form.setVisible(true);
-                tableRol.setModel(new DefaultTableModel()); // refrescar
+                tablaRol.setModel(new DefaultTableModel()); // refrescar
             }
         });
 
@@ -62,7 +62,7 @@ public class RoleForm extends JDialog {
             if (role != null) {
                 RoleWriteForm form = new RoleWriteForm(mainForm, CUD.DELETE, role);
                 form.setVisible(true);
-                tableRol.setModel(new DefaultTableModel()); // refrescar
+                tablaRol.setModel(new DefaultTableModel()); // refrescar
             }
         });
     }
@@ -89,7 +89,7 @@ public class RoleForm extends JDialog {
         model.addColumn("Descripción");
         model.addColumn("Estatus");
 
-        tableRol.setModel(model);
+        tablaRol.setModel(model);
         Object[] row = new Object[4];
 
         for (int i = 0; i < roles.size(); i++) {
@@ -105,15 +105,15 @@ public class RoleForm extends JDialog {
     }
 
     private void hideCol(int colIndex) {
-        tableRol.getColumnModel().getColumn(colIndex).setMaxWidth(0);
-        tableRol.getColumnModel().getColumn(colIndex).setMinWidth(0);
-        tableRol.getTableHeader().getColumnModel().getColumn(colIndex).setMaxWidth(0);
-        tableRol.getTableHeader().getColumnModel().getColumn(colIndex).setMinWidth(0);
+        tablaRol.getColumnModel().getColumn(colIndex).setMaxWidth(0);
+        tablaRol.getColumnModel().getColumn(colIndex).setMinWidth(0);
+        tablaRol.getTableHeader().getColumnModel().getColumn(colIndex).setMaxWidth(0);
+        tablaRol.getTableHeader().getColumnModel().getColumn(colIndex).setMinWidth(0);
     }
 
     private Role getRoleFromTableRow() {
         try {
-            int selectedRow = tableRol.getSelectedRow();
+            int selectedRow = tablaRol.getSelectedRow();
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(null,
                         "Selecciona una fila de la tabla.",
@@ -121,7 +121,7 @@ public class RoleForm extends JDialog {
                 return null;
             }
 
-            int id = (int) tableRol.getValueAt(selectedRow, 0);
+            int id = (int) tablaRol.getValueAt(selectedRow, 0);
             Role role = roleDAO.getByID(id);
 
             if (role.getIdRole() == 0) {
