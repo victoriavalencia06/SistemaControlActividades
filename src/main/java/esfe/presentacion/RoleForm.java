@@ -136,6 +136,7 @@ public class RoleForm extends JDialog {
             JOptionPane.showMessageDialog(null, ex.getMessage(),
                     "ERROR", JOptionPane.ERROR_MESSAGE);
             return null;
+
         }
     }
 }

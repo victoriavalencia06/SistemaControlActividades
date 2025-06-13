@@ -144,6 +144,7 @@ public class RoleWriteForm extends JDialog {
             JOptionPane.showMessageDialog(null,
                     ex.getMessage(),
                     "ERROR", JOptionPane.ERROR_MESSAGE);
+
         }
     }
 }
