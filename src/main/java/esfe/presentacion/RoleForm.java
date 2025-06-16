@@ -3,14 +3,15 @@ package esfe.presentacion;
 import esfe.Persistencia.RoleDAO;
 import esfe.dominio.Role;
 import esfe.utils.CUD;
-
+import esfe.utils.Audit;
+import esfe.dominio.Action;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-public class RoleForm extends JDialog {
+public class RoleForm extends BaseForm {
     private JPanel mainPanel;
     private JTextField txtNombre;
     private JButton btnCrear;
@@ -22,6 +23,7 @@ public class RoleForm extends JDialog {
     private MainForm mainForm;
 
     public RoleForm(MainForm mainForm) {
+        super("RoleForm"); // 👈 Esto activa registro de apertura y cierre
         this.mainForm = mainForm;
         this.roleDAO = new RoleDAO();
 
@@ -44,6 +46,7 @@ public class RoleForm extends JDialog {
 
         btnCrear.addActionListener(e -> {
             RoleWriteForm form = new RoleWriteForm(mainForm, CUD.CREATE, new Role());
+            Audit.log(Action.ROLE_CREATE); // 👈 Registro
             form.setVisible(true);
             tablaRol.setModel(new DefaultTableModel()); // refrescar
         });
@@ -52,6 +55,7 @@ public class RoleForm extends JDialog {
             Role role = getRoleFromTableRow();
             if (role != null) {
                 RoleWriteForm form = new RoleWriteForm(mainForm, CUD.UPDATE, role);
+                Audit.log(Action.ROLE_UPDATE); // 👈 Registro
                 form.setVisible(true);
                 tablaRol.setModel(new DefaultTableModel()); // refrescar
             }
@@ -61,6 +65,7 @@ public class RoleForm extends JDialog {
             Role role = getRoleFromTableRow();
             if (role != null) {
                 RoleWriteForm form = new RoleWriteForm(mainForm, CUD.DELETE, role);
+                Audit.log(Action.ROLE_DELETE); // 👈 Registro
                 form.setVisible(true);
                 tablaRol.setModel(new DefaultTableModel()); // refrescar
             }

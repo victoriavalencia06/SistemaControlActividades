@@ -39,42 +39,18 @@ public class UserHistoryDAO {
         }
     }
 
-    public boolean update(UserHistory history) throws SQLException {
-        String sql = "UPDATE UserHistory SET idUser = ?, action = ?, timestamp = ?, status = ?, details = ? WHERE idHistory = ?";
-        try (
-                Connection connection = conn.connect();
-                PreparedStatement ps = connection.prepareStatement(sql)
-        ) {
-            ps.setInt(1, history.getIdUser());
-            ps.setString(2, history.getAction());
-            ps.setTimestamp(3, history.getTimestamp() != null ? Timestamp.valueOf(history.getTimestamp()) : null);
-            ps.setInt(4, history.getStatus());
-            ps.setString(5, history.getDetails());
-            ps.setInt(6, history.getIdHistory());
+    public ArrayList<UserHistory> search(String userName) throws SQLException {
+        String sql = "SELECT uh.*, u.name AS userName " +
+                "FROM UserHistory uh " +
+                "JOIN Users u ON uh.idUser = u.idUser " +
+                "WHERE u.name LIKE ?";
 
-            return ps.executeUpdate() > 0;
-        }
-    }
-
-    public boolean delete(UserHistory history) throws SQLException {
-        String sql = "DELETE FROM UserHistory WHERE idHistory = ?";
-        try (
-                Connection connection = conn.connect();
-                PreparedStatement ps = connection.prepareStatement(sql)
-        ) {
-            ps.setInt(1, history.getIdHistory());
-            return ps.executeUpdate() > 0;
-        }
-    }
-
-    public ArrayList<UserHistory> search(String action) throws SQLException {
-        String sql = "SELECT * FROM UserHistory WHERE action LIKE ?";
         ArrayList<UserHistory> historyList = new ArrayList<>();
         try (
                 Connection connection = conn.connect();
                 PreparedStatement ps = connection.prepareStatement(sql)
         ) {
-            ps.setString(1, "%" + action + "%");
+            ps.setString(1, "%" + userName + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     historyList.add(mapResultSet(rs));
@@ -85,7 +61,12 @@ public class UserHistoryDAO {
     }
 
     public UserHistory getByID(int id) throws SQLException {
-        String sql = "SELECT * FROM UserHistory WHERE idHistory = ?";
+        String sql = "SELECT uh.*, u.name AS userName " +
+                "FROM UserHistory uh " +
+                "JOIN Users u ON uh.idUser = u.idUser " +
+                "WHERE uh.idHistory = ?";
+
+
         try (
                 Connection connection = conn.connect();
                 PreparedStatement ps = connection.prepareStatement(sql)
@@ -101,7 +82,7 @@ public class UserHistoryDAO {
     }
 
     private UserHistory mapResultSet(ResultSet rs) throws SQLException {
-        return new UserHistory(
+        UserHistory history = new UserHistory(
                 rs.getInt("idHistory"),
                 rs.getInt("idUser"),
                 rs.getTimestamp("timestamp") != null ? rs.getTimestamp("timestamp").toLocalDateTime() : null,
@@ -109,5 +90,28 @@ public class UserHistoryDAO {
                 rs.getInt("status"),
                 rs.getString("details")
         );
+        history.setUserName(rs.getString("userName"));  // asigna el nombre aquí
+        return history;
     }
+
+    //Carga los ultimos 500 registros
+    public ArrayList<UserHistory> getLastRecords(int limit) throws SQLException {
+        String sql = "SELECT TOP " + limit + " uh.*, u.name AS userName " +
+                "FROM UserHistory uh " +
+                "JOIN Users u ON uh.idUser = u.idUser " +
+                "ORDER BY uh.timestamp DESC";
+        ArrayList<UserHistory> historyList = new ArrayList<>();
+        try (
+                Connection connection = conn.connect();
+                PreparedStatement ps = connection.prepareStatement(sql)
+        ) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    historyList.add(mapResultSet(rs));
+                }
+            }
+        }
+        return historyList;
+    }
+
 }

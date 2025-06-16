@@ -4,10 +4,11 @@ import esfe.Persistencia.RoleDAO;
 import esfe.dominio.Role;
 import esfe.utils.CBOption;
 import esfe.utils.CUD;
-
+import esfe.utils.Audit;
+import esfe.dominio.Action;
 import javax.swing.*;
 
-public class RoleWriteForm extends JDialog {
+public class RoleWriteForm extends BaseForm {
     private JPanel mainPanel;
     private JTextField txtNombre;
     private JComboBox comboEstado;
@@ -21,6 +22,7 @@ public class RoleWriteForm extends JDialog {
     private Role role;
 
     public RoleWriteForm(MainForm mainForm, CUD cud, Role role) {
+        super("RoleWriteForm"); // 👈 Esto activa registro de apertura y cierre
         this.mainForm = mainForm;
         this.cud = cud;
         this.role = role;
@@ -130,6 +132,19 @@ public class RoleWriteForm extends JDialog {
             }
 
             if (result) {
+                // 🔍 Registrar acción de historial
+                switch (this.cud) {
+                    case CREATE:
+                        Audit.log(Action.ROLE_CREATE_SUCCESS);
+                        break;
+                    case UPDATE:
+                        Audit.log(Action.ROLE_UPDATE_SUCCESS);
+                        break;
+                    case DELETE:
+                        Audit.log(Action.ROLE_DELETE_SUCCESS);
+                        break;
+                }
+
                 JOptionPane.showMessageDialog(null,
                         "Transacción realizada exitosamente",
                         "Información", JOptionPane.INFORMATION_MESSAGE);

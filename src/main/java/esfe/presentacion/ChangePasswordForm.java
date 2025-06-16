@@ -1,11 +1,14 @@
 package esfe.presentacion;
 
+import esfe.dominio.Status;
 import esfe.dominio.User; // Importa la clase User, que probablemente representa un usuario en el sistema.
 import esfe.Persistencia.UserDAO; // Importa la interfaz o clase UserDAO, que define o implementa el acceso a datos para la entidad User.
 
 import javax.swing.*; // Importa el paquete javax.swing, que proporciona clases para construir interfaces gráficas de usuario (GUIs) en Java.
+import esfe.utils.Audit;
+import esfe.dominio.Action;
 
-public class ChangePasswordForm extends JDialog {
+public class ChangePasswordForm extends BaseForm {
     private JPanel mainPanel;
     private JTextField txtEmail;
     private JPasswordField txtPassword;
@@ -16,6 +19,7 @@ public class ChangePasswordForm extends JDialog {
 
     // Constructor de la clase ChangePasswordForm. Recibe una instancia de MainForm como parámetro.
     public ChangePasswordForm(MainForm mainForm) {
+        super("ChangePasswordForm"); // 👈 Esto activa el registro de apertura/cierre automático
         this.mainForm = mainForm; // Asigna la instancia de MainForm recibida a la variable local.
         userDAO = new UserDAO(); // Crea una nueva instancia de UserDAO al instanciar este formulario.
         txtEmail.setText(mainForm.getUserAutenticate().getEmail()); // Pre-carga el campo de correo electrónico con el email del usuario autenticado en la ventana principal.
@@ -54,6 +58,7 @@ public class ChangePasswordForm extends JDialog {
 
             // Verifica el resultado de la actualización.
             if (res) {
+                Audit.log(Action.USER_PASSWORD_CHANGE); // 👈 Registro del cambio de contraseña
                 // Si la actualización es exitosa, cierra la ventana actual (ChangePasswordForm).
                 this.dispose();
                 // Crea una nueva instancia de la ventana de inicio de sesión (LoginForm), pasando la ventana principal como parámetro.
@@ -67,6 +72,7 @@ public class ChangePasswordForm extends JDialog {
                         "Cambiar contraseña", JOptionPane.WARNING_MESSAGE);
             }
         } catch (Exception ex) {
+            Audit.log(Action.USER_PASSWORD_CHANGE, Status.INACTIVO, "Falló cambio de contraseña");
             // Captura cualquier excepción que ocurra durante el proceso.
             JOptionPane.showMessageDialog(null,
                     ex.getMessage(),

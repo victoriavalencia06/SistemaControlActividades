@@ -6,6 +6,9 @@ import java.awt.event.WindowEvent; // Importa la clase WindowEvent desde el paqu
 
 import esfe.dominio.User; // Importa la clase User desde el paquete esfe.dominio. Esta clase  representa la entidad de usuario con sus atributos (id, nombre, email, contraseña, estado, etc.).
 import esfe.Persistencia.UserDAO; // Importa la clase UserDAO desde el paquete esfe.persistencia. Esta clase se encarga de la interacción con la base de datos para la entidad User (crear, leer, actualizar, eliminar, autenticar usuarios).
+import esfe.utils.Audit;
+import esfe.utils.SessionContext;
+import esfe.dominio.Action;
 
 /**
  * La clase LoginForm representa la ventana de inicio de sesión de la aplicación.
@@ -54,10 +57,14 @@ public class LoginForm extends JDialog {
             // 2. El ID del usuario autenticado es mayor que 0 (implica que es un usuario válido en la base de datos).
             // 3. El correo electrónico del usuario autenticado coincide con el correo electrónico ingresado.
             if(userAut != null && userAut.getId() > 0 && userAut.getEmail().equals((user.getEmail()))){
+                SessionContext.set(userAut);                // ✅ Guarda usuario en sesión
+                Audit.log(Action.LOGIN_OK);                // ✅ Historial
+
                 this.mainForm.setUserAutenticate(userAut); // Si la autenticación es exitosa, establece el usuario autenticado en el formulario principal ('mainForm'). Esto permite que el formulario principal acceda a la información del usuario logueado.
                 this.dispose(); // Cierra la ventana de inicio de sesión actual.
             }
             else{
+                Audit.log(Action.LOGIN_FAIL);              // ✅ Fallo login
                 // Si la autenticación falla, muestra un mensaje de diálogo de advertencia.
                 JOptionPane.showMessageDialog(null,
                         "Email y password incorrecto", // El mensaje que se muestra al usuario.

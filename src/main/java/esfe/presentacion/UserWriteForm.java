@@ -5,13 +5,16 @@ import esfe.dominio.Role;
 import esfe.Persistencia.UserDAO; // Importa la interfaz o clase UserDAO, que define las operaciones de acceso a datos para la entidad User.
 import esfe.utils.CBOption; // Importa la clase CBOption, probablemente una clase utilitaria para manejar opciones de un ComboBox (por ejemplo, para asociar un valor con un texto).
 import esfe.utils.CUD; // Importa el enum CUD (Create, Update, Delete),  para indicar el tipo de operación que se está realizando (Crear, Actualizar, Eliminar).
+import esfe.utils.Audit;
+import esfe.dominio.Action;
+import esfe.dominio.Status;
 
 import javax.swing.*; // Importa el paquete Swing, que proporciona clases para crear interfaces gráficas de usuario (GUIs).
 
 import esfe.dominio.User; // Importa la clase User, que representa la entidad de usuario en el dominio de la aplicación.
 
 
-public class UserWriteForm extends JDialog {
+public class UserWriteForm extends BaseForm {
     private JPanel mainPanel;
     private JTextField txtName;
     private JTextField txtEmail;
@@ -30,6 +33,7 @@ public class UserWriteForm extends JDialog {
 
     // Constructor de la clase UserWriteForm. Recibe la ventana principal, el tipo de operación CUD y un objeto User como parámetros.
     public UserWriteForm(MainForm mainForm, CUD cud, User user) {
+        super("UserWriteForm");// abre/cierra en historial
         this.cud = cud; // Asigna el tipo de operación CUD recibida a la variable local 'cud'.
         this.en = user; // Asigna el objeto User recibido a la variable local 'en'.
         this.mainForm = mainForm; // Asigna la instancia de MainForm recibida a la variable local 'mainForm'.
@@ -244,11 +248,16 @@ public class UserWriteForm extends JDialog {
 
                 // Si la operación de la base de datos (creación, actualización o eliminación) fue exitosa.
                 if (r) {
-                    // Muestra un mensaje de éxito al usuario.
-                    JOptionPane.showMessageDialog(null,
-                            "Transacción realizada exitosamente",
+                    // 🔍 Historial de éxito
+                    switch (this.cud) {
+                        case CREATE -> Audit.log(Action.USER_CREATE_SUCCESS);
+                        case UPDATE -> Audit.log(Action.USER_UPDATE_SUCCESS);
+                        case DELETE -> Audit.log(Action.USER_DELETE_SUCCESS);
+                    }
+
+                    JOptionPane.showMessageDialog(
+                            null, "Transacción realizada exitosamente",
                             "Información", JOptionPane.INFORMATION_MESSAGE);
-                    // Cierra la ventana actual (UserWriteForm).
                     this.dispose();
                 } else {
                     // Si la operación de la base de datos falló.

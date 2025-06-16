@@ -2,6 +2,10 @@ package esfe.presentacion;
 
 import esfe.dominio.User;
 import esfe.dominio.Role;
+import esfe.utils.Audit;
+import esfe.utils.SessionContext;
+import esfe.dominio.Action;
+
 import javax.swing.*;
 
 public class MainForm extends JFrame {
@@ -49,8 +53,11 @@ public class MainForm extends JFrame {
 
         JMenuItem itemSalir = new JMenuItem("Salir"); // Crea un nuevo elemento de menú llamado "Salir".
         menuPerfil.add(itemSalir); // Agrega el elemento "Salir" al menú "Perfil".
-        itemSalir.addActionListener(e -> System.exit(0)); // Agrega un ActionListener al elemento "Salir". Cuando se hace clic, termina la ejecución de la aplicación (cierra la JVM).
-
+        itemSalir.addActionListener(e -> {
+            Audit.log(Action.LOGOUT);         // ⬅️ Guarda el historial de cierre de sesión
+            SessionContext.set(null);         // ⬅️ Limpia el usuario autenticado
+            System.exit(0);                   // ⬅️ Cierra la aplicación
+        });
 
         // Menú "Matenimiento"
         JMenu menuMantenimiento = new JMenu("Mantenimientos"); // Crea un nuevo menú llamado "Mantenimientos".
@@ -68,6 +75,13 @@ public class MainForm extends JFrame {
         itemRole.addActionListener(e -> { // Agrega un ActionListener al elemento "Usuarios".
             RoleForm RoleForm = new RoleForm(this); // Cuando se hace clic, crea una nueva instancia de UserReadingForm (formulario para leer/listar usuarios), pasándole la instancia actual de MainForm como padre.
             RoleForm.setVisible(true); // Hace visible el formulario de lectura de usuarios.
+        });
+
+        JMenuItem itemUserHistory = new JMenuItem("Historial de usuario"); // Crea un nuevo elemento de menú llamado "Usuarios".
+        menuMantenimiento.add(itemUserHistory); // Agrega el elemento "Usuarios" al menú "Mantenimientos".
+        itemUserHistory.addActionListener(e -> { // Agrega un ActionListener al elemento "Usuarios".
+            UserHistoryForm UserHistoryForm = new UserHistoryForm(this); // Cuando se hace clic, crea una nueva instancia de UserReadingForm (formulario para leer/listar usuarios), pasándole la instancia actual de MainForm como padre.
+            UserHistoryForm.setVisible(true); // Hace visible el formulario de lectura de usuarios.
         });
 
     }

@@ -6,13 +6,14 @@ import javax.swing.*; // Importa el paquete Swing, que proporciona clases para c
 import javax.swing.table.DefaultTableModel; // Importa la clase DefaultTableModel, utilizada para crear y manipular modelos de datos para JTable.
 import esfe.dominio.User; // Importa la clase User, que representa la entidad de usuario en el dominio de la aplicación.
 import esfe.utils.CUD; // Importa el enum  CUD (Create, Update, Delete).
-
+import esfe.utils.Audit;
+import esfe.dominio.Action;
 import java.awt.event.KeyAdapter; // Importa la clase KeyAdapter, una clase adaptadora para recibir eventos de teclado.
 import java.awt.event.KeyEvent; // Importa la clase KeyEvent, que representa un evento de teclado.
 import java.util.ArrayList; // Importa la clase ArrayList, una implementación de la interfaz List que permite almacenar colecciones dinámicas de objetos.
 
 
-public class UserReadingForm extends JDialog {
+public class UserReadingForm extends BaseForm {
     private JPanel mainPanel;
     private JTextField txtName;
     private JButton btnCreate;
@@ -25,6 +26,7 @@ public class UserReadingForm extends JDialog {
 
     // Constructor de la clase UserReadingForm. Recibe una instancia de MainForm como parámetro.
     public UserReadingForm(MainForm mainForm) {
+        super("UserReadingForm"); // 👈 Esto activa registro de apertura y cierre
         this.mainForm = mainForm; // Asigna la instancia de MainForm recibida a la variable local.
         userDAO = new UserDAO(); // Crea una nueva instancia de UserDAO al instanciar este formulario.
         setContentPane(mainPanel); // Establece el panel principal como el contenido de este diálogo.
@@ -52,6 +54,7 @@ public class UserReadingForm extends JDialog {
 
         // Agrega un ActionListener al botón btnCreate.
         btnCreate.addActionListener(s -> {
+            Audit.log(Action.USER_CREATE); // Historial: intento de crear
             // Crea una nueva instancia de UserWriteForm para la creación de un nuevo usuario, pasando la MainForm, la constante CREATE de CUD y un nuevo objeto User vacío.
             UserWriteForm userWriteForm = new UserWriteForm(this.mainForm, CUD.CREATE, new User());
             // Hace visible el formulario de escritura de usuario.
@@ -67,6 +70,7 @@ public class UserReadingForm extends JDialog {
             User user = getUserFromTableRow();
             // Verifica si se seleccionó un usuario en la tabla (getUserFromTableRow no devolvió null).
             if (user != null) {
+                Audit.log(Action.USER_UPDATE); // Historial: intento de modificar
                 // Crea una nueva instancia de UserWriteForm para la actualización del usuario seleccionado, pasando la MainForm, la constante UPDATE de CUD y el objeto User obtenido.
                 UserWriteForm userWriteForm = new UserWriteForm(this.mainForm, CUD.UPDATE, user);
                 // Hace visible el formulario de escritura de usuario.
@@ -83,6 +87,7 @@ public class UserReadingForm extends JDialog {
             User user = getUserFromTableRow();
             // Verifica si se seleccionó un usuario en la tabla (getUserFromTableRow no devolvió null).
             if (user != null) {
+                Audit.log(Action.USER_DELETE); // Historial: intento de eliminar
                 // Crea una nueva instancia de UserWriteForm para la eliminación del usuario seleccionado, pasando la MainForm, la constante DELETE de CUD y el objeto User obtenido.
                 UserWriteForm userWriteForm = new UserWriteForm(this.mainForm, CUD.DELETE, user);
                 // Hace visible el formulario de escritura de usuario.

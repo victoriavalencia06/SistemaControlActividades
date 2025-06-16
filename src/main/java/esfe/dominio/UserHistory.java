@@ -10,6 +10,9 @@ public class UserHistory {
     private int status;
     private String details;
 
+    private String userName;
+
+
     public UserHistory() {
     }
 
@@ -83,5 +86,13 @@ public class UserHistory {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
