@@ -2,6 +2,7 @@ package esfe.presentacion;
 
 import esfe.Persistencia.RoleDAO;
 import esfe.dominio.Role;
+import esfe.dominio.UserHistory;
 import esfe.utils.CUD;
 import esfe.utils.Audit;
 import esfe.dominio.Action;
@@ -9,6 +10,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class RoleForm extends BaseForm {
@@ -32,6 +34,13 @@ public class RoleForm extends BaseForm {
         setTitle("Buscar Rol");
         pack();
         setLocationRelativeTo(mainForm);
+
+        try {
+            ArrayList<Role> roles = roleDAO.getFirstRoles(500);
+            createTable(roles);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar datos iniciales: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
 
         txtNombre.addKeyListener(new KeyAdapter() {
             @Override

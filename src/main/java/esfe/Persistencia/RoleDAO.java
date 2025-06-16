@@ -108,4 +108,26 @@ public class RoleDAO {
         return null;
     }
 
+    public ArrayList<Role> getFirstRoles(int limit) throws SQLException {
+        ArrayList<Role> roles = new ArrayList<>();
+        String sql = "SELECT TOP (?) * FROM Role ORDER BY idRole";
+
+        try (Connection connection = conn.connect();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Role r = new Role();
+                    r.setIdRole(rs.getInt("idRole"));
+                    r.setName(rs.getString("name"));
+                    r.setDescription(rs.getString("description"));
+                    r.setStatus(rs.getInt("status"));
+                    roles.add(r);
+                }
+            }
+        }
+        return roles;
+    }
+
 }
