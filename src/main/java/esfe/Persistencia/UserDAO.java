@@ -331,6 +331,9 @@ public class UserDAO {
         return userAutenticate; // Retornar el objeto User autenticado o null si la autentiación falló.
     }
 
+
+
+
     /**
      * Actualiza la contraseña de un usuario existente en la base de datos.
      * La nueva contraseña proporcionada se hashea antes de ser almacenada.
@@ -373,5 +376,42 @@ public class UserDAO {
             conn.disconnect(); // Desconectar de la base de datos.
         }
         return res; // Retornar el resultado de l operación de actualización de la contraseña.
+    }
+
+    public ArrayList<User> getLast500Users() throws SQLException {
+        ArrayList<User> records = new ArrayList<>();
+
+        try {
+            ps = conn.connect().prepareStatement(
+                    "SELECT TOP 500 u.idUser, u.name, u.email, u.status, u.idRole, r.name AS roleName " +
+                            "FROM Users u " +
+                            "LEFT JOIN Role r ON u.idRole = r.idRole " +
+                            "ORDER BY u.idUser DESC"  // Orden descendente para obtener los más recientes
+            );
+
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt(1));
+                user.setName(rs.getString(2));
+                user.setEmail(rs.getString(3));
+                user.setStatus(rs.getByte(4));
+                user.setIdRole(rs.getInt(5));
+                user.setRoleName(rs.getString("roleName"));
+                records.add(user);
+            }
+
+            ps.close();
+            rs.close();
+        } catch (SQLException ex) {
+            throw new SQLException("Error al obtener los últimos 500 usuarios: " + ex.getMessage(), ex);
+        } finally {
+            ps = null;
+            rs = null;
+            conn.disconnect();
+        }
+
+        return records;
     }
 }

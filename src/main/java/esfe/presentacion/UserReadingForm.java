@@ -10,6 +10,7 @@ import esfe.utils.Audit;
 import esfe.dominio.Action;
 import java.awt.event.KeyAdapter; // Importa la clase KeyAdapter, una clase adaptadora para recibir eventos de teclado.
 import java.awt.event.KeyEvent; // Importa la clase KeyEvent, que representa un evento de teclado.
+import java.sql.SQLException;
 import java.util.ArrayList; // Importa la clase ArrayList, una implementación de la interfaz List que permite almacenar colecciones dinámicas de objetos.
 
 
@@ -34,70 +35,64 @@ public class UserReadingForm extends BaseForm {
         setTitle("Buscar Usuario"); // Establece el título de la ventana del diálogo.
         pack(); // Ajusta el tamaño de la ventana para que todos sus componentes se muestren correctamente.
         setLocationRelativeTo(mainForm); // Centra la ventana del diálogo relative a la ventana principal.
+        loadLast500Users();
 
         // Agrega un listener de teclado al campo de texto txtNombre.
         txtName.addKeyListener(new KeyAdapter() {
-            // Sobrescribe el método keyReleased, que se llama cuando se suelta una tecla.
             @Override
             public void keyReleased(KeyEvent e) {
-                // Verifica si el campo de texto txtNombre no está vacío.
                 if (!txtName.getText().trim().isEmpty()) {
-                    // Llama al método search para buscar usuarios según el texto ingresado.
+                    // Si hay texto, aplicar filtro
                     search(txtName.getText());
                 } else {
-                    // Si el campo de texto está vacío, crea un modelo de tabla vacío y lo asigna a la tabla de usuarios para limpiarla.
-                    DefaultTableModel emptyModel = new DefaultTableModel();
-                    tableUsers.setModel(emptyModel);
+                    // Si no hay texto, cargar últimos 500
+                    loadLast500Users();
                 }
             }
         });
 
         // Agrega un ActionListener al botón btnCreate.
         btnCreate.addActionListener(s -> {
-            Audit.log(Action.USER_CREATE); // Historial: intento de crear
-            // Crea una nueva instancia de UserWriteForm para la creación de un nuevo usuario, pasando la MainForm, la constante CREATE de CUD y un nuevo objeto User vacío.
+            Audit.log(Action.USER_CREATE);
             UserWriteForm userWriteForm = new UserWriteForm(this.mainForm, CUD.CREATE, new User());
-            // Hace visible el formulario de escritura de usuario.
             userWriteForm.setVisible(true);
-            // Limpia la tabla de usuarios creando y asignando un modelo de tabla vacío  para refrescar la lista después de la creación.
-            DefaultTableModel emptyModel = new DefaultTableModel();
-            tableUsers.setModel(emptyModel);
+            loadLast500Users();  // Recarga la tabla con los últimos 500 usuarios
         });
 
         // Agrega un ActionListener al botón btnUpdate.
         btnUpdate.addActionListener(s -> {
-            // Llama al método getUserFromTableRow para obtener el usuario seleccionado en la tabla.
             User user = getUserFromTableRow();
-            // Verifica si se seleccionó un usuario en la tabla (getUserFromTableRow no devolvió null).
             if (user != null) {
-                Audit.log(Action.USER_UPDATE); // Historial: intento de modificar
-                // Crea una nueva instancia de UserWriteForm para la actualización del usuario seleccionado, pasando la MainForm, la constante UPDATE de CUD y el objeto User obtenido.
+                Audit.log(Action.USER_UPDATE);
                 UserWriteForm userWriteForm = new UserWriteForm(this.mainForm, CUD.UPDATE, user);
-                // Hace visible el formulario de escritura de usuario.
                 userWriteForm.setVisible(true);
-                // Limpia la tabla de usuarios creando y asignando un modelo de tabla vacío para refrescar la lista después de la actualización.
-                DefaultTableModel emptyModel = new DefaultTableModel();
-                tableUsers.setModel(emptyModel);
+                loadLast500Users();
             }
         });
 
         // Agrega un ActionListener al botón btnEliminar.
         btnDelete.addActionListener(s -> {
-            // Llama al método getUserFromTableRow para obtener el usuario seleccionado en la tabla.
             User user = getUserFromTableRow();
-            // Verifica si se seleccionó un usuario en la tabla (getUserFromTableRow no devolvió null).
             if (user != null) {
-                Audit.log(Action.USER_DELETE); // Historial: intento de eliminar
-                // Crea una nueva instancia de UserWriteForm para la eliminación del usuario seleccionado, pasando la MainForm, la constante DELETE de CUD y el objeto User obtenido.
+                Audit.log(Action.USER_DELETE);
                 UserWriteForm userWriteForm = new UserWriteForm(this.mainForm, CUD.DELETE, user);
-                // Hace visible el formulario de escritura de usuario.
                 userWriteForm.setVisible(true);
-                // Limpia la tabla de usuarios creando y asignando un modelo de tabla vacío  para refrescar la lista después de la eliminación.
-                DefaultTableModel emptyModel = new DefaultTableModel();
-                tableUsers.setModel(emptyModel);
+                loadLast500Users();
             }
         });
     }
+
+    private void loadLast500Users() {
+        try {
+            ArrayList<User> users = userDAO.getLast500Users();
+            createTable(users);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null,
+                    ex.getMessage(),
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void search(String query) {
         try {
             // Llama al método 'search' del UserDAO para buscar usuarios cuya información
